@@ -259,7 +259,7 @@ jobs:
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag:qmodem-${{ matrix.ARCHITECTURE }}-$(date +"%Y%m%d")"
+        echo "::set-output name=release_tag::${{ matrix.ARCHITECTURE }}"
         SET_IP=${{ github.event.inputs.lan_ip }}
         if [ -z "$SET_IP" ]; then
             SET_IP="192.168.10.1"
@@ -287,7 +287,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       with:
-        tag_name: qmodem-${{ matrix.ARCHITECTURE }}-$(date +"%Y%m%d")
+        tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
@@ -296,7 +296,7 @@ jobs:
       with:
         retain_days: 1
         keep_minimum_runs: 3
-        token: ${{ env.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: 删除自动发布的旧固件
       uses: dev-drprasad/delete-older-releases@v0.1.0
