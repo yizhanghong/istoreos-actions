@@ -287,7 +287,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
+        tag_name: qmodem-${{ matrix.ARCHITECTURE }}-$(date +"%Y%m%d")
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
