@@ -304,3 +304,4 @@ jobs:
       with:
         keep_latest: 6
         delete_tags: true
+        token: ${{ secrets.GITHUB_TOKEN }}
