@@ -142,6 +142,12 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.REPO_BRANCH }} ${{ matrix.ARCHITECTURE }}
+        git clone --depth=1 https://github.com/gSpotx2f/luci-app-cpu-status.git package/luci-app-cpu-status
+        git clone --depth=1 https://github.com/gSpotx2f/luci-app-temp-status.git package/luci-app-temp-status
+        echo "
+        CONFIG_PACKAGE_luci-app-temp-status=y
+        CONFIG_PACKAGE_luci-app-cpu-status=y
+        " >> .config
     
     - name: qmodem相关
       run: |
