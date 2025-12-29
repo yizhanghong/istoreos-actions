@@ -145,10 +145,12 @@ jobs:
         git clone --depth=1 https://github.com/gSpotx2f/luci-app-cpu-status.git package/luci-app-cpu-status
         git clone --depth=1 https://github.com/gSpotx2f/luci-app-temp-status.git package/luci-app-temp-status
         git clone --depth=1 https://github.com/sirpdboy/luci-app-netspeedtest.git package/luci-app-netspeedtest
+        git clone --depth=1 https://github.com/timsaya/luci-app-bandix.git package/luci-app-bandix
         echo "
         CONFIG_PACKAGE_luci-app-temp-status=y
         CONFIG_PACKAGE_luci-app-cpu-status=y
         CONFIG_PACKAGE_luci-app-netspeedtest=y
+        CONFIG_PACKAGE_luci-app-bandix=y
         CONFIG_ISO_IMAGES=y
         CONFIG_VDI_IMAGES=y
         " >> .config
