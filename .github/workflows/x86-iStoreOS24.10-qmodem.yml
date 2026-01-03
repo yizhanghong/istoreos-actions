@@ -49,7 +49,7 @@ jobs:
           # - istoreos-23.05
           - istoreos-24.10
         ARCHITECTURE:
-          - rk33xx-24.10
+          # - rk33xx-24.10
           - rk35xx-24.10
           - x86-24.10
         os:
@@ -142,6 +142,18 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.REPO_BRANCH }} ${{ matrix.ARCHITECTURE }}
+        git clone --depth=1 https://github.com/gSpotx2f/luci-app-cpu-status.git package/luci-app-cpu-status
+        git clone --depth=1 https://github.com/gSpotx2f/luci-app-temp-status.git package/luci-app-temp-status
+        git clone --depth=1 https://github.com/sirpdboy/luci-app-netspeedtest.git package/luci-app-netspeedtest
+        git clone --depth=1 https://github.com/timsaya/luci-app-bandix.git package/luci-app-bandix
+        echo "
+        CONFIG_PACKAGE_luci-app-temp-status=y
+        CONFIG_PACKAGE_luci-app-cpu-status=y
+        CONFIG_PACKAGE_luci-app-netspeedtest=y
+        CONFIG_PACKAGE_luci-app-bandix=y
+        CONFIG_ISO_IMAGES=y
+        CONFIG_VDI_IMAGES=y
+        " >> .config
     
     - name: qmodem相关
       run: |
@@ -154,8 +166,8 @@ jobs:
         sed -i "s/CONFIG_PACKAGE_luci-app-sms-tool/#CONFIG_PACKAGE_luci-app-sms-tool/g" .config
         echo "
         CONFIG_PACKAGE_luci-i18n-qmodem-zh-cn=y
-        # CONFIG_PACKAGE_luci-i18n-qmodem-hc-zh-cn=y
-        # CONFIG_PACKAGE_luci-i18n-qmodem-mwan-zh-cn=y
+        #CONFIG_PACKAGE_luci-i18n-qmodem-hc-zh-cn=y
+        CONFIG_PACKAGE_luci-i18n-qmodem-mwan-zh-cn=y
         # CONFIG_PACKAGE_luci-i18n-qmodem-ru is not set
         CONFIG_PACKAGE_luci-i18n-qmodem-sms-zh-cn=y
         CONFIG_PACKAGE_luci-app-qmodem=y
@@ -165,12 +177,12 @@ jobs:
         CONFIG_PACKAGE_luci-app-qmodem_USE_TOM_CUSTOMIZED_QUECTEL_CM=y
         # CONFIG_PACKAGE_luci-app-qmodem_USING_QWRT_QUECTEL_CM_5G is not set
         # CONFIG_PACKAGE_luci-app-qmodem_USING_NORMAL_QUECTEL_CM is not set
-        # CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_ADD_PCI_SUPPORT is not set
+        CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_ADD_PCI_SUPPORT=y
         # CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_ADD_QFIREHOSE_SUPPORT is not set
-        # CONFIG_PACKAGE_luci-app-qmodem-hc=y
-        # CONFIG_PACKAGE_luci-app-qmodem-mwan=y
+        #CONFIG_PACKAGE_luci-app-qmodem-hc=y
+        CONFIG_PACKAGE_luci-app-qmodem-mwan=y
         CONFIG_PACKAGE_luci-app-qmodem-sms=y
-        # CONFIG_PACKAGE_luci-app-qmodem-ttl=y
+        #CONFIG_PACKAGE_luci-app-qmodem-ttl=y
         CONFIG_PACKAGE_qmodem=y
         CONFIG_PACKAGE_quectel-CM-5G=y
         CONFIG_PACKAGE_quectel-CM-5G-M=y
@@ -259,7 +271,7 @@ jobs:
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag::qmodem-${{ matrix.ARCHITECTURE }}"
+        echo "::set-output name=release_tag::qmodem-${{ matrix.ARCHITECTURE }}${{ env.FILE_DATE }}"
         SET_IP=${{ github.event.inputs.lan_ip }}
         if [ -z "$SET_IP" ]; then
             SET_IP="192.168.10.1"
@@ -302,6 +314,7 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 6
+        keep_latest: 20
         delete_tags: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
