@@ -158,10 +158,10 @@ jobs:
     - name: qmodem相关
       run: |
         cd openwrt
-        #echo 'src-git qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-        #./scripts/feeds update qmodem
-        #./scripts/feeds install -a -f -p qmodem
-        git clone -b v3.0.0 --depth=1 https://github.com/FUjr/QModem.git package/qmodem
+        echo 'src-git qmodem https://github.com/FUjr/QModem.git;v3.0.0' >> feeds.conf.default
+        ./scripts/feeds update qmodem
+        ./scripts/feeds install -a -f -p qmodem
+        #git clone -b v3.0.0 --depth=1 https://github.com/FUjr/QModem.git package/qmodem
         sed -i "s/CONFIG_PACKAGE_sms-tool/#CONFIG_PACKAGE_sms-tool/g" .config  
         sed -i "s/CONFIG_PACKAGE_luci-app-modem/#CONFIG_PACKAGE_luci-app-modem/g" .config  
         sed -i "s/CONFIG_PACKAGE_luci-app-sms-tool/#CONFIG_PACKAGE_luci-app-sms-tool/g" .config
