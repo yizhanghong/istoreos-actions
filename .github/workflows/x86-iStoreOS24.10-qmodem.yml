@@ -151,8 +151,8 @@ jobs:
         CONFIG_PACKAGE_luci-app-temp-status=y
         CONFIG_PACKAGE_luci-app-cpu-status=y
         CONFIG_PACKAGE_luci-app-netspeedtest=y
-        CONFIG_PACKAGE_bandix=y
-        CONFIG_PACKAGE_luci-app-bandix=y
+        #CONFIG_PACKAGE_bandix=y
+        #CONFIG_PACKAGE_luci-app-bandix=y
         CONFIG_ISO_IMAGES=y
         CONFIG_VDI_IMAGES=y
         " >> .config
