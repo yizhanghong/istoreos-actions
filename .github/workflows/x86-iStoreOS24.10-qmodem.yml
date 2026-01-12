@@ -50,7 +50,7 @@ jobs:
           - istoreos-24.10
         ARCHITECTURE:
           # - rk33xx-24.10
-          - rk35xx-24.10
+          # - rk35xx-24.10
           - x86-24.10
         os:
           - ubuntu-22.04
