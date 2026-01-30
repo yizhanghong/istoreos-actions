@@ -88,6 +88,7 @@ jobs:
       run: |
         echo "------------------------------- 更新并安装依赖 -------------------------------"
         sudo -E apt-get -qq update
+        sudo -E apt-get -qq install mkisofs
         sudo -E apt-get -qq install $(cat $GITHUB_WORKSPACE/depends/${{ matrix.os }})
         sudo python3 -m pip install --break-system-packages pyelftools
         echo "------------------------------- 清理Docker镜像和软件 -------------------------------"
