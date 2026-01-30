@@ -86,15 +86,11 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         echo "------------------------------- 更新并安装依赖 -------------------------------"
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
         sudo -E apt-get -qq install $(cat $GITHUB_WORKSPACE/depends/${{ matrix.os }})
-        wget https://bootstrap.pypa.io/pip/3.6/get-pip.py
-        sudo python3 get-pip.py
-        sudo rm -rf get-pip.py
-        sudo pip install pyelftools
+        sudo python3 -m pip install --break-system-packages pyelftools
         echo "------------------------------- 清理Docker镜像和软件 -------------------------------"
-        docker rmi `docker images -q`
+        docker images -q | xargs -r docker rmi 2>/dev/null || true
         docker image prune -a -f
         sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
         sudo -E apt-get -qq autoremove --purge
