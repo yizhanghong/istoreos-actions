@@ -181,7 +181,7 @@ jobs:
         CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_ADD_PCI_SUPPORT=y
         # CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_ADD_QFIREHOSE_SUPPORT is not set
         #CONFIG_PACKAGE_luci-app-qmodem-hc=y
-        CONFIG_PACKAGE_luci-app-qmodem-mwan=y
+        #CONFIG_PACKAGE_luci-app-qmodem-mwan=y
         CONFIG_PACKAGE_luci-app-qmodem-sms=y
         #CONFIG_PACKAGE_luci-app-qmodem-ttl=y
         CONFIG_PACKAGE_qmodem=y
