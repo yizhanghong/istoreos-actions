@@ -58,6 +58,9 @@ jobs:
 
       fail-fast: false
 
+    # 显式超时，等于 GitHub 默认 6h；真正防止“卡满 6h 被取消”的是下面 apt 步骤的 timeout 包裹
+    timeout-minutes: 360
+
     steps:
     - name: 准备完成
       uses: actions/checkout@main
@@ -87,8 +90,11 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         echo "------------------------------- 更新并安装依赖 -------------------------------"
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(cat $GITHUB_WORKSPACE/depends/${{ matrix.os }})
+        # 重试 apt 更新，并用 timeout 包裹单次调用，避免镜像源偶发卡死导致整 job 跑满 6h 超时被取消（rk35xx 曾因此取消）
+        for i in 1 2 3; do
+          timeout 300 sudo -E apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=60 -o Acquire::https::Timeout=60 -qq update && break || sleep 10
+        done
+        sudo -E apt-get -o Acquire::Retries=3 -qq install --no-install-recommends $(cat $GITHUB_WORKSPACE/depends/${{ matrix.os }})
         sudo python3 -m pip install --break-system-packages pyelftools
         echo "------------------------------- 清理Docker镜像和软件 -------------------------------"
         docker images -q | xargs -r docker rmi 2>/dev/null || true
@@ -179,7 +185,8 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j8
+        # 下载偶发失败（网络抖动/镜像 404）时降级重试，避免一次性失败直接中断整次构建
+        make download -j8 || make download -j1 || make download -j1 V=s
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -188,7 +195,8 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        # BUILD_LOG=1 让每个包的编译日志落盘到 logs/，便于未来失败时精确定位（沿用上游的失败降级策略）
+        make -j$(nproc) BUILD_LOG=1 || make -j1 BUILD_LOG=1 || make -j1 V=s BUILD_LOG=1
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
         echo "::set-output name=status::success"
 

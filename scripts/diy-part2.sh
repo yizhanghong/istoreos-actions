@@ -97,20 +97,31 @@ cat feeds/packages/lang/rust/Makefile
 echo "------------"
 
 # 添加第三方应用
-mkdir kiddin9
-pushd kiddin9
-git clone --depth=1 https://github.com/kiddin9/kwrt-packages .
-popd
+# 克隆 kiddin9 软件包源（带重试，避免偶发网络/鉴权错误导致 guest-wifi/onliner/ramfree/netdata/rtbwmon/adguardhome 等被静默丢弃）
+mkdir -p kiddin9
+for i in 1 2 3; do
+  rm -rf kiddin9 && mkdir kiddin9
+  git clone --depth=1 https://github.com/kiddin9/kwrt-packages kiddin9 && break
+  sleep 10
+done
 
 mkdir Modem-Support
-pushd Modem-Support
-git clone --depth=1 https://github.com/Siriling/5G-Modem-Support .
-popd
+for i in 1 2 3; do
+  rm -rf Modem-Support && mkdir Modem-Support
+  pushd Modem-Support
+  git clone --depth=1 https://github.com/Siriling/5G-Modem-Support . && popd && break
+  popd
+  sleep 10
+done
 
 mkdir MyConfig
-pushd MyConfig
-git clone --depth=1 https://github.com/Siriling/OpenWRT-MyConfig .
-popd
+for i in 1 2 3; do
+  rm -rf MyConfig && mkdir MyConfig
+  pushd MyConfig
+  git clone --depth=1 https://github.com/Siriling/OpenWRT-MyConfig . && popd && break
+  popd
+  sleep 10
+done
 
 mkdir package/community
 pushd package/community
